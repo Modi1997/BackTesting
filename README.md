@@ -17,3 +17,5 @@ If you think something should change or you have any creative idea, please follo
 
 ### Enjoy the testing of your strategies and feel free to contribute!
 
+![image](https://github.com/Modi1997/BackTesting/assets/83775634/6d230c6b-72b2-4cb3-9564-e09bc4449d1b)
+![image](https://github.com/Modi1997/BackTesting/assets/83775634/8a224758-8cf1-47ba-8973-cd620dcf14ca)
