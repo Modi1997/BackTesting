@@ -1,3 +1,5 @@
+import pandas as pd
+
 
 # Initial Capital
 capital = 100
