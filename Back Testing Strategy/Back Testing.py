@@ -28,19 +28,24 @@ def simple_strategy(df, ema_period, initial_capital=100):
     :return: metrics, trades, df
     """
 
+    # EMA
     df['EMA'] = df['Close'].ewm(span=ema_period, adjust=False).mean()
     # Signal: 1 Buy, -1 Sell
     df['Signal'] = 0
 
+    # Initialization of variables
     entried = False
     capital = initial_capital
     position = 0
     trades = []
     fees = 0
     fee_rate = 0.01
+
+    # Get in - Get out
     for i in range(1, len(df)):
+
+        # Buy signal
         if not entried and df['Close'].iloc[i] > df['EMA'].iloc[i]:
-            # Buy signal
             entry_price = df['Close'].iloc[i]
             max_qty = capital / (entry_price * (1 + fee_rate))
             cost = entry_price * max_qty * (1 + fee_rate)
@@ -51,8 +56,9 @@ def simple_strategy(df, ema_period, initial_capital=100):
             trades.append({'Type': 'BUY', 'Price': entry_price, 'Index': df.index[i], 'Qty': max_qty})
             df['Signal'].iloc[i] = 1
 
+        # Sell signal
         elif entried and df['Close'].iloc[i] < df['EMA'].iloc[i]:
-            # Sell signal
+
             exit_price = df['Close'].iloc[i]
             sell_value = exit_price * position * (1 - fee_rate)
             capital += sell_value
@@ -61,31 +67,6 @@ def simple_strategy(df, ema_period, initial_capital=100):
             position = 0
             entried = False
             df['Signal'].iloc[i] = -1
-
-    # for i in range(1, len(df)):
-    #     if not entried and df['Close'].iloc[i] > df['EMA'].iloc[i]:
-    #         # Buy signal
-    #         entry_price = df['Close'].iloc[i]
-    #         max_qty = capital / (entry_price * (1 + fee_rate))
-    #         cost = entry_price * max_qty * (1 + fee_rate)
-    #         capital -= cost
-    #         fees += entry_price * max_qty * fee_rate
-    #         position = max_qty
-    #         entried = True
-    #         trades.append({'Type': 'BUY', 'Price': entry_price, 'Index': df.index[i], 'Qty': max_qty})
-    #         df['Signal'].iloc[i] = 1
-    #         print(f"BUY: Entry Price: {entry_price}, Max Qty: {max_qty}, Cost: {cost}, Capital: {capital}, Fees: {fees}")
-    #
-    #     elif entried and df['Close'].iloc[i] < df['EMA'].iloc[i]:
-    #         # Sell signal
-    #         exit_price = df['Close'].iloc[i]
-    #         capital += exit_price * position * (1 - fee_rate)
-    #         fees += exit_price * position * fee_rate
-    #         trades.append({'Type': 'SELL', 'Price': exit_price, 'Index': df.index[i], 'Qty': position})
-    #         position = 0
-    #         entried = False
-    #         df['Signal'].iloc[i] = -1
-    #         print(f"SELL: Exit Price: {exit_price}, Position: {position}, Sell Value: {sell_value}, Capital: {capital}, Fees: {fees}")
 
     # Metrics calculations
     ending_capital = capital + position * df['Close'].iloc[-1]
@@ -115,46 +96,48 @@ def simple_strategy(df, ema_period, initial_capital=100):
 
 # Fetch data from YahooFinance
 symbol = 'AAPL'
+# Start Date of data retrieval
 start_date = '2020-01-01'
+# End Date of data retrieval
 end_date = '2024-06-01'
+# Fetch data
 df = get_yahoo_data(symbol, start_date, end_date)
 
 # Apply the strategy
-ema_period = 200  # Example EMA period
+ema_period = 200
 metrics, trades, df = simple_strategy(df, ema_period)
 
 # Visualization
 fig = go.Figure()
-
 # Add Close price trace
 fig.add_trace(go.Scatter(x=df.index, y=df['Close'], mode='lines', name='Close Price'))
-
 # Add EMA trace
 fig.add_trace(go.Scatter(x=df.index, y=df['EMA'], mode='lines', name=f'EMA {ema_period}', line=dict(dash='dash')))
-
 # Add Buy signals
 buy_signals = df[df['Signal'] == 1]
 fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'], mode='markers', name='Buy Signal',
                          marker=dict(symbol='triangle-up', color='green', size=10)))
-
 # Add Sell signals
 sell_signals = df[df['Signal'] == -1]
 fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'], mode='markers', name='Sell Signal',
                          marker=dict(symbol='triangle-down', color='red', size=10)))
-
 # Customize layout
 fig.update_layout(title=f'{symbol} Price Chart with Buy/Sell Signals',
                   xaxis_title='Date',
                   yaxis_title='Price',
                   legend_title='Legend')
-
-# Show interactive plot
 fig.show()
 
-# Display metrics and trades in a new window
-# Display metrics and trades in a new window
-# Display metrics and trades in a new window
+
+# Metrics Framework
 def show_metrics_and_trades(metrics, trades):
+    """
+    A function that opens a new window with the investment return metrics and all the taken trades of the strategy
+
+    :param metrics: various metrics to display
+    :param trades: all trades taken based on the given strategy
+    """
+
     root = tk.Tk()
     root.title("Backtesting Results")
 
@@ -214,6 +197,7 @@ def show_metrics_and_trades(metrics, trades):
     trades_frame = ttk.LabelFrame(frame, text="All Trades", padding="10")
     trades_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=5, pady=5)
 
+    # Columns in the trading data rows
     cols = ('Type', 'Price', 'Date', 'Return %')
     tree = ttk.Treeview(trades_frame, columns=cols, show='headings')
     tree.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -227,10 +211,14 @@ def show_metrics_and_trades(metrics, trades):
             buy_trade = trades[i-1]
             return_percentage = ((trade['Price'] - buy_trade['Price']) / buy_trade['Price']) * 100
             tree.insert("", "end", values=(trade['Type'], f"${trade['Price']:.2f}", trade['Index'].strftime('%Y-%m-%d'), f"{return_percentage:.2f}%"))
+
+            # Dynamic colouring of the trading data rows
+            # Winner Green
             if return_percentage > 0:
                 tree.tag_configure('winner', background='lightgreen')
                 tree.item(tree.get_children()[-1], tags=('winner',))
                 tree.item(tree.get_children()[-2], tags=('winner',))
+            # Loser Red
             else:
                 tree.tag_configure('loser', background='lightcoral')
                 tree.item(tree.get_children()[-1], tags=('loser',))
