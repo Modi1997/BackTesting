@@ -106,7 +106,7 @@ df = get_yahoo_data(symbol, start_date, end_date)
 # Apply the strategy
 ema_period = 200
 metrics, trades, df = simple_strategy(df, ema_period)
-
+ 
 # Visualization
 fig = go.Figure()
 # Add Close price trace
