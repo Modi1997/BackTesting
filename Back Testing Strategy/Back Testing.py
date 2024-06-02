@@ -50,6 +50,7 @@ def simple_strategy(df, ema_period, initial_capital=10000, qty=1):
     losing_trades = total_trades // 2 - winning_trades
     winning_percentage = (winning_trades / (total_trades // 2)) * 100 if total_trades > 0 else 0
     average_bars_held = len(df) / (total_trades // 2) if total_trades > 0 else 0
+    total_trades = int(total_trades/2)
 
     metrics = {
         'Initial Capital': initial_capital,
@@ -114,17 +115,17 @@ def show_metrics_and_trades(metrics, trades):
     frame = ttk.Frame(root, padding="10")
     frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
-    # ****** Returns section ******
-    returns_frame = ttk.LabelFrame(frame, text="Returns", padding="10")
+    # ******** Strategy Return Details **********
+    returns_frame = ttk.LabelFrame(frame, text="Returns & Trades", padding="15")
     returns_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
 
-    ttk.Label(returns_frame, text="Initial Capital: ").grid(row=0, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="Initial Capital: ", font="Helvetica 10 bold").grid(row=0, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text="${:.2f}".format(metrics['Initial Capital'])).grid(row=0, column=1, sticky=tk.W)
 
-    ttk.Label(returns_frame, text="Ending Capital: ").grid(row=1, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="Ending Capital: ", font="Helvetica 10 bold").grid(row=1, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text="${:.2f}".format(metrics['Ending Capital'])).grid(row=1, column=1, sticky=tk.W)
 
-    ttk.Label(returns_frame, text="Net Profit: ").grid(row=2, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="Net Profit: ", font="Helvetica 10 bold").grid(row=2, column=0, sticky=tk.W)
     net_profit_label = ttk.Label(returns_frame, text="${:.2f}".format(metrics['Net Profit']))
     net_profit_label.grid(row=2, column=1, sticky=tk.W)
     if metrics['Net Profit'] > 0:
@@ -132,7 +133,7 @@ def show_metrics_and_trades(metrics, trades):
     elif metrics['Net Profit'] < 0:
         net_profit_label.configure(foreground='red')
 
-    ttk.Label(returns_frame, text="PnL %: ").grid(row=3, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="PnL %: ", font="Helvetica 10 bold").grid(row=3, column=0, sticky=tk.W)
     pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['PnL %']))
     pnl_label.grid(row=3, column=1, sticky=tk.W)
     if metrics['PnL %'] > 0:
@@ -140,34 +141,32 @@ def show_metrics_and_trades(metrics, trades):
     elif metrics['PnL %'] < 0:
         pnl_label.configure(foreground='red')
 
-    ttk.Label(returns_frame, text="Total Transactions Costs (Fees): ").grid(row=4, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="Total Transactions Costs (Fees): ", font="Helvetica 10 bold").grid(row=4, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text="${:.2f}".format(metrics['Total Transactions Costs (Fees)'])).grid(row=4, column=1, sticky=tk.W)
 
-    # All Trades section
+    ttk.Label(returns_frame, text="Winning Trades %: ", font="Helvetica 10 bold").grid(row=5, column=0, sticky=tk.W)
+    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['Winning Trades %']))
+    pnl_label.grid(row=5, column=1, sticky=tk.W)
+    if metrics['Winning Trades %'] > 50:
+        pnl_label.configure(foreground='green')
+    elif metrics['Winning Trades %'] <= 50:
+        pnl_label.configure(foreground='red')
+
+    ttk.Label(returns_frame, text=f"Total Trades: ", font="Helvetica 10 bold").grid(row=6, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text=metrics['Total Trades']).grid(row=6, column=1, sticky=tk.W)
+
+    ttk.Label(returns_frame, text=f"Number of Winners: ", font="Helvetica 10 bold").grid(row=7, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text=metrics['Number of Winners']).grid(row=7, column=1, sticky=tk.W)
+
+    ttk.Label(returns_frame, text=f"Number of Losers: ", font="Helvetica 10 bold").grid(row=8, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text=metrics['Number of Losers']).grid(row=8, column=1, sticky=tk.W)
+
+    ttk.Label(returns_frame, text=f"Average Bars Held: ", font="Helvetica 10 bold").grid(row=9, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text=int(metrics['Average Bars Held'])).grid(row=9, column=1, sticky=tk.W)
+
+    # ********** All Trades section **********
     trades_frame = ttk.LabelFrame(frame, text="All Trades", padding="10")
     trades_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=5, pady=5)
-
-    ttk.Label(trades_frame, text=f"Total Trades: {metrics['Total Trades']}").grid(row=0, column=0, sticky=tk.W)
-
-    # ttk.Label(trades_frame, text=f"Winning Trades %: {metrics['Winning Trades %']:.2f}").grid(row=1, column=0, sticky=tk.W)
-
-    winning_percentage_label = ttk.Label(trades_frame, text="Winning Trades %: ")
-
-    # Determine the color based on the condition
-    color = 'red' if metrics['Winning Trades %'] < 50 else 'green'
-
-    # Add the value part of the label with the specified color
-    winning_percentage_label_value = ttk.Label(trades_frame, text=f"{metrics['Winning Trades %']:.2f}",
-                                               foreground=color)
-
-    # Grid the labels
-    winning_percentage_label.grid(row=1, column=0, sticky=tk.W)
-    winning_percentage_label_value.grid(row=1, column=1, sticky=tk.W)
-
-    ttk.Label(trades_frame, text=f"Number of Winners: {metrics['Number of Winners']}").grid(row=2, column=0, sticky=tk.W)
-
-    ttk.Label(trades_frame, text=f"Number of Losers: {metrics['Number of Losers']}").grid(row=3, column=0, sticky=tk.W)
-    ttk.Label(trades_frame, text=f"Average Bars Held: {metrics['Average Bars Held']:.2f}").grid(row=4, column=0, sticky=tk.W)
 
     cols = ('Type', 'Price', 'Date', 'Return %')
     tree = ttk.Treeview(trades_frame, columns=cols, show='headings')
