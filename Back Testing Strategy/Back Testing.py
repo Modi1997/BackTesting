@@ -1,8 +1,8 @@
-import pandas as pd
-import plotly.graph_objects as go
+# import libraries
 import tkinter as tk
 from tkinter import ttk
 
+# import functions and variables from other files
 from Retrieve_Data import *
 from Strategy import *
 from Chart_Signals import *
