@@ -8,13 +8,13 @@ from Strategy import *
 from Chart_Signals import *
 
 # Symbol to fetch data
-symbol = 'TSL'
+symbol = 'AAPL'
 # Start Date of data retrieval
 start_date = '2020-01-01'
 # End Date of data retrieval
 end_date = '2024-06-01'
 # Interval (for YahooFinance only 1d or 1wk). For BNB can be m, h, d, w
-interval = '1wk'
+interval = '1d'
 
 # Fetch data
 df = get_yahoo_data(symbol, start_date, end_date, interval)
