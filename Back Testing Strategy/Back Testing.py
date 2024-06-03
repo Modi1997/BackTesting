@@ -46,6 +46,9 @@ def show_metrics_and_trades(metrics, trades):
     frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
     # ******** Strategy Return Details **********
+    #TODO: Add highest return and lowst return
+    #TODO: Add average bars held for winners and losers
+    #TODO: When there is a short strategy too then add 3 cols -> Total Trades - Long Trades - Short Trades
     returns_frame = ttk.LabelFrame(frame, text="Returns & Trades", padding="15")
     returns_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
 
