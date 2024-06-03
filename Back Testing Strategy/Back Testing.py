@@ -1,132 +1,28 @@
 import pandas as pd
-import yfinance as yf
-import plotly.express as px
 import plotly.graph_objects as go
 import tkinter as tk
 from tkinter import ttk
 
-# Fetching data
-def get_yahoo_data(symbol, start_date, end_date):
-    """
-    Get dataframe from Yahoo Finance API with given symbol and start date and end date
+from Retrieve_Data import *
+from Strategy import *
+from Chart_Signals import *
 
-    :param symbol: symbol to get data from
-    :param start_date: start date in a format of YYYY-MM-DD
-    :param end_date: end date in a format of YYYY-MM-DD
-    :return: df
-    """
-    return yf.download(symbol, start=start_date, end=end_date)
-
-# Implementing the strategy
-def simple_strategy(df, ema_period, initial_capital=100):
-    """
-    This function gets the DF, other indicators or values and initial capital and returns performance metrics
-
-    :param df: dataframe of the stock/crypto/commodity
-    :param ema_period: indicator
-    :param initial_capital: default = 100
-    :return: metrics, trades, df
-    """
-
-    # EMA
-    df['EMA'] = df['Close'].ewm(span=ema_period, adjust=False).mean()
-    # Signal: 1 Buy, -1 Sell
-    df['Signal'] = 0
-
-    # Initialization of variables
-    entried = False
-    capital = initial_capital
-    position = 0
-    trades = []
-    fees = 0
-    fee_rate = 0.01
-
-    # Get in - Get out
-    for i in range(1, len(df)):
-
-        # Buy signal
-        if not entried and df['Close'].iloc[i] > df['EMA'].iloc[i]:
-            entry_price = df['Close'].iloc[i]
-            max_qty = capital / (entry_price * (1 + fee_rate))
-            cost = entry_price * max_qty * (1 + fee_rate)
-            capital -= cost
-            fees += entry_price * max_qty * fee_rate
-            position = max_qty
-            entried = True
-            trades.append({'Type': 'BUY', 'Price': entry_price, 'Index': df.index[i], 'Qty': max_qty})
-            df['Signal'].iloc[i] = 1
-
-        # Sell signal
-        elif entried and df['Close'].iloc[i] < df['EMA'].iloc[i]:
-
-            exit_price = df['Close'].iloc[i]
-            sell_value = exit_price * position * (1 - fee_rate)
-            capital += sell_value
-            fees += exit_price * position * fee_rate
-            trades.append({'Type': 'SELL', 'Price': exit_price, 'Index': df.index[i], 'Qty': position})
-            position = 0
-            entried = False
-            df['Signal'].iloc[i] = -1
-
-    # Metrics calculations
-    ending_capital = capital + position * df['Close'].iloc[-1]
-    net_profit = ending_capital - initial_capital
-    pnl_percentage = (net_profit / initial_capital) * 100
-    total_trades = len(trades)
-    winning_trades = sum(1 for t in trades if t['Type'] == 'SELL' and t['Price'] > trades[trades.index(t)-1]['Price'])
-    losing_trades = (total_trades // 2) - winning_trades
-    winning_percentage = (winning_trades / (total_trades // 2)) * 100 if total_trades > 0 else 0
-    average_bars_held = len(df) / (total_trades // 2) if total_trades > 0 else 0
-    total_trades = int(total_trades / 2)
-
-    metrics = {
-        'Initial Capital': initial_capital,
-        'Ending Capital': ending_capital,
-        'Net Profit': net_profit,
-        'PnL %': pnl_percentage,
-        'Total Transactions Costs (Fees)': fees,
-        'Total Trades': total_trades,
-        'Winning Trades %': winning_percentage,
-        'Number of Winners': winning_trades,
-        'Number of Losers': losing_trades,
-        'Average Bars Held': average_bars_held
-    }
-
-    return metrics, trades, df
-
-# Fetch data from YahooFinance
+# Symbol to fetch data
 symbol = 'AAPL'
 # Start Date of data retrieval
 start_date = '2020-01-01'
 # End Date of data retrieval
 end_date = '2024-06-01'
+
 # Fetch data
 df = get_yahoo_data(symbol, start_date, end_date)
 
-# Apply the strategy
+# Apply EMA strategy
 ema_period = 200
-metrics, trades, df = simple_strategy(df, ema_period)
- 
-# Visualization
-fig = go.Figure()
-# Add Close price trace
-fig.add_trace(go.Scatter(x=df.index, y=df['Close'], mode='lines', name='Close Price'))
-# Add EMA trace
-fig.add_trace(go.Scatter(x=df.index, y=df['EMA'], mode='lines', name=f'EMA {ema_period}', line=dict(dash='dash')))
-# Add Buy signals
-buy_signals = df[df['Signal'] == 1]
-fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'], mode='markers', name='Buy Signal',
-                         marker=dict(symbol='triangle-up', color='green', size=10)))
-# Add Sell signals
-sell_signals = df[df['Signal'] == -1]
-fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'], mode='markers', name='Sell Signal',
-                         marker=dict(symbol='triangle-down', color='red', size=10)))
-# Customize layout
-fig.update_layout(title=f'{symbol} Price Chart with Buy/Sell Signals',
-                  xaxis_title='Date',
-                  yaxis_title='Price',
-                  legend_title='Legend')
-fig.show()
+metrics, trades, df = ema_strategy(df, ema_period)
+
+# Chart signal analysis
+plot_trading_signals(df, ema_period, symbol)
 
 
 # Metrics Framework
@@ -136,6 +32,9 @@ def show_metrics_and_trades(metrics, trades):
 
     :param metrics: various metrics to display
     :param trades: all trades taken based on the given strategy
+    :return metrics and trades:
+        1. A new window with the statistics and the trades based on the strategy
+        2. A new browser window with the chart and the past/current signals
     """
 
     root = tk.Tk()
@@ -233,5 +132,5 @@ def show_metrics_and_trades(metrics, trades):
 
     root.mainloop()
 
-# Show metrics and trades in a new window
+# Show metrics and all trades
 show_metrics_and_trades(metrics, trades)
