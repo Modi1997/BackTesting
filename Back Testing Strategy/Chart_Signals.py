@@ -1,6 +1,15 @@
 import plotly.graph_objects as go
 
 def plot_trading_signals(df, ema_period, symbol):
+    """
+
+
+    :param df:
+    :param ema_period:
+    :param symbol:
+    :return:
+    """
+
     # Create a new figure
     fig = go.Figure()
 
