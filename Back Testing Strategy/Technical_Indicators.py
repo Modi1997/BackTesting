@@ -1,7 +1,4 @@
 import talib
-import sys
-
-sys.path.append('C:/Users/modio/Crypto_Forecasting/Crypto_Forecasting/API_and_Data')
 from Retrieve_Data import *
 
 
