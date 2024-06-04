@@ -62,8 +62,11 @@ def MACD(close: object) -> pd.DataFrame:
     """
     This function is creating a technical indicator called MACD (Moving Average Convergence/Divergence) and indicates
     where the cross-over of the trend happens (turn around). The first 33 values are NaN as this technical indicator
-    needs data from at least 33 points. Please note that it provides 3 arrays: 1 for the buy, 1 for the sell and which
-    indicates the difference between buy-sell. The cross-over happens when the 2nd value from the MACD_total is negative
+    needs data from at least 33 points. Please note that it provides 3 arrays:
+        - 1 for the buy
+        - 1 for the sell
+        - 1 difference between buy-sell.
+    The cross-over happens when the 2nd value from the MACD_total is negative
     and the latest one becomes positive
 
     :param close: input close column

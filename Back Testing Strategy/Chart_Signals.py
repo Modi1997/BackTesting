@@ -11,6 +11,8 @@ def plot_trading_signals(df, ema_period, symbol):
     :return: interactive visualization
     """
 
+    #TODO: Make the chart better (preferably with bar chart green/red)
+
     # Create a new figure
     fig = go.Figure()
 
