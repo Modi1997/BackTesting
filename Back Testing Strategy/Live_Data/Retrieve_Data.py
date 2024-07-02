@@ -2,6 +2,21 @@ import pandas as pd
 import yfinance as yf
 from binance import Client
 
+
+# API Credentials
+api_key = 'siP2VBOq44rbgvHfnfWomRb4dcDY7QbVNwAxauetYXGsG9rqCg7YODo3Cn5I57KS'
+api_secret = 'fwgN7NuEXn8hgpBkjVsGs8sYCyqcWRWFv1OkC7jqAepQLLJ5Tehs3vKmifHD7jaS'
+
+# Client Request
+client = Client(api_key, api_secret)
+# Account Info
+client_account = client.get_account()
+# Keys of Client Dictionary
+client_keys = client.get_account().keys()
+# Get Holdings
+account_info = client_account["balances"]
+
+
 def get_yahoo_data(symbol, start_date, end_date, interval):
     """
     Get dataframe from Yahoo Finance API with given symbol and start date and end date
@@ -15,20 +30,6 @@ def get_yahoo_data(symbol, start_date, end_date, interval):
 
     return yf.download(symbol, start=start_date, end=end_date, interval=interval)
 
-
-
-# API Key & Secret
-api_key = 'siP2VBOq44rbgvHfnfWomRb4dcDY7QbVNwAxauetYXGsG9rqCg7YODo3Cn5I57KS'
-api_secret = 'fwgN7NuEXn8hgpBkjVsGs8sYCyqcWRWFv1OkC7jqAepQLLJ5Tehs3vKmifHD7jaS'
-
-# Client Request
-client = Client(api_key, api_secret)
-# Account Info
-client_account = client.get_account()
-# Keys of Client Dictionary
-client_keys = client.get_account().keys()
-# Get Holdings
-account_info = client_account["balances"]
 
 def get_data(symbol, interval, lookback):
     """

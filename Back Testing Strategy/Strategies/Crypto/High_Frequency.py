@@ -13,3 +13,8 @@ coin_df = get_data('BTCUSDT','1d', '22500d').drop(columns='Date')
 coin_df['EMA'] = round(EMA(50, coin_df['Close']), 2)
 
 print(coin_df)
+
+# 1m timeframe 50 EMA - conditions on 15m and 1d
+# uptrend daily EMA + Change positive then find a time to buy risk/reward 1/4
+# downtrend -//- -//- -//-   negative -//- sell -//- -//- -//-
+# maybe condition on % Change e.g. if +3% BTC then easier long on alts 
