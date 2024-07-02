@@ -1,5 +1,5 @@
 import talib
-from Retrieve_Data import *
+from Live_Data.Retrieve_Data import *
 
 
 def frame(symbol, interval, lookback):
@@ -44,17 +44,17 @@ def RSI(close: object) -> pd.DataFrame:
     return rsi
 
 
-def EMA(close: object) -> pd.DataFrame:
+def EMA(ema_period: int, close: object) -> pd.DataFrame:
     """
     This function is creating a technical indicator called EMA (Exponential Moving Average) and indicates whether the
     asset is on an uptrend or downtrend. The 30 first values are NaN as it needs at least 14 values to read. As long
     as the actual value is above the EMA then we have an uptrend and respectively below, then a downtrend.
 
+    :param ema_period: length of EMA
     :param close: input close column
     :return: dataframe with datetime and EMA value
     """
-
-    ema = talib.EMA(close)
+    ema = close.ewm(span=ema_period, adjust=False).mean()
     return ema
 
 

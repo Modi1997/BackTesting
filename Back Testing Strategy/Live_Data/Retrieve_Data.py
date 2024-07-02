@@ -43,17 +43,24 @@ def get_data(symbol, interval, lookback):
     :return: dataframe
     """
 
-    # creating a df with the client.get_historical_klines() binance function
+    # Create a DF with the client.get_historical_klines() binance function
     frame = pd.DataFrame(client.get_historical_klines(symbol, interval, lookback+' min ago GMT'))
-    # get only the 6 first columns from the client.get_historical_klines()
+    # Get Only First 6 Columns from client.get_historical_klines()
     frame = frame.iloc[:,:6]
-    # name these columns as their headers are just numbers
+
+    # Rename Columns
     frame.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
+    # Create Date Column
     frame['Date'] = frame['Time']
 
-    # set index to time (ms) and convert type to float
+    # Set index to Time (ms) and convert type to float
     frame = frame.set_index('Time')
     frame.index = pd.to_datetime(frame.index, unit='ms')
     frame = frame.astype(float)
+
+    # Creating % Change Column
+    frame['Change'] = round(frame['Close'].pct_change() * 100, 2)
+    # Rounding Volume to 2 Decimals
+    frame['Volume'] = round(frame['Volume'], 2)
 
     return frame
