@@ -3,9 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 
 # import functions and variables from other files
-from Retrieve_Data import *
-from Strategy import *
-from Chart_Signals import *
+from Live_Data.Retrieve_Data import *
+from Strategies.Strategy_Test import *
+from Trades_Framework.Chart_Signals import *
 
 # Symbol to fetch data
 symbol = 'AAPL'
