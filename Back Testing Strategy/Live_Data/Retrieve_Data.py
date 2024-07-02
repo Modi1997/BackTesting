@@ -17,17 +17,17 @@ def get_yahoo_data(symbol, start_date, end_date, interval):
 
 
 
-# secret key and api connection/pass provided by account on binance
+# API Key & Secret
 api_key = 'siP2VBOq44rbgvHfnfWomRb4dcDY7QbVNwAxauetYXGsG9rqCg7YODo3Cn5I57KS'
 api_secret = 'fwgN7NuEXn8hgpBkjVsGs8sYCyqcWRWFv1OkC7jqAepQLLJ5Tehs3vKmifHD7jaS'
 
-# client request
+# Client Request
 client = Client(api_key, api_secret)
-# client account all info
+# Account Info
 client_account = client.get_account()
-# client_keys of the dictionary
+# Keys of Client Dictionary
 client_keys = client.get_account().keys()
-# get only the cryptocurrency assets
+# Get Holdings
 account_info = client_account["balances"]
 
 def get_data(symbol, interval, lookback):
