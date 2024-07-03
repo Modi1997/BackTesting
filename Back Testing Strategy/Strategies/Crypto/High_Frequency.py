@@ -17,4 +17,4 @@ print(coin_df)
 # 1m timeframe 50 EMA - conditions on 15m and 1d
 # uptrend daily EMA + Change positive then find a time to buy risk/reward 1/4
 # downtrend -//- -//- -//-   negative -//- sell -//- -//- -//-
-# maybe condition on % Change e.g. if +3% BTC then easier long on alts 
+# maybe condition on % Change e.g. if +3% BTC then easier long on alts
