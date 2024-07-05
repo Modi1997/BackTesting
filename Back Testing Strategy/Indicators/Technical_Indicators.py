@@ -1,4 +1,7 @@
 import talib
+import pandas as pd
+from typing import Tuple
+from pandas import DataFrame
 from Live_Data.Retrieve_Data import *
 
 
@@ -77,6 +80,7 @@ def MACD(close: object) -> pd.DataFrame:
     macd = talib.MACD(close)
     return macd
 
+
 def STOCHASTIC_RSI(df: pd.DataFrame, rsi_col: str = 'RSI') -> pd.DataFrame:
     """
     Calculate the Stochastic RSI for a given DataFrame containing RSI values.
@@ -106,3 +110,79 @@ def STOCHASTIC_RSI(df: pd.DataFrame, rsi_col: str = 'RSI') -> pd.DataFrame:
     df.dropna(inplace=True)
 
     return df
+
+
+def get_data(symbol: str, interval: str, lookback: str) -> pd.DataFrame:
+    """
+    This function gets the raw data from the get_data function and adds the technical indicators as new features
+
+    :param symbol: cryptocurrency pair
+    :param interval: timeframe of the chart
+    :param lookback: data depth
+    :return: DataFrame with indicators EMA, RSI and MACD
+    """
+
+    # Retrieve Data
+    df = data(symbol, interval, lookback).drop(columns='Date')
+
+    # Get EMA
+    df['EMA'] = round(EMA(50, df['Close']), 2)
+    # Get RSI
+    df['RSI'] = round(RSI(df['Close']), 2)
+    # Get MACD Total
+    macd = MACD(df['Close'])
+    df['MACD'] = round(macd[-3], 2)
+    # Get STOCHASTIC_RSI
+    df = STOCHASTIC_RSI(df)
+
+    return df
+
+
+def Daily_Trend(Change: str = 'Change', Close: str = 'Close',
+                RSI: str = 'RSI', EMA: str = 'EMA',
+                K: str = '%K', D: str = '%D') -> tuple[DataFrame, int]:
+    """
+    Gets a dataframe with the required parameters as existing columns and returns the trend of the day
+    (+5 Strong Buy to -5 Strong Sell)
+
+    :param df: DataFrame of the asset
+    :param Change: Daily % Change
+    :param Close: Actual Close Price
+    :param RSI: Relative Strength Index
+    :param EMA: Exponential Moving Average
+    :param K: Current Price of the Security in % of the difference between highest and lowest point over selected time
+    :param D: 3-day average of the K
+    :return: BTC DataFrame with the K & D
+    :return: Trend in a range of (-5,5)
+    """
+
+    btc_daily = get_data('BTCUSDT', '1d', '100d')
+
+    # Defining Daily BTC Trend (-5 Strong Sell, +5 Strong Buy)
+    trend = 0
+
+    # Buying Signal
+    if btc_daily[Change].iloc[-1] > 0:
+        trend += 1
+        if btc_daily[EMA].iloc[-1] < btc_daily[Close].iloc[-1]:
+            trend += 1
+        if btc_daily[RSI].iloc[-1] > btc_daily[RSI].iloc[-2]:
+            trend += 1
+        if btc_daily[K].iloc[-1] > btc_daily[D].iloc[-1]:
+            trend += 1
+        if btc_daily[K].iloc[-1] < 50:
+            trend += 1
+
+    # Selling Signal
+    elif btc_daily[Change].iloc[-1] < 0:
+        trend -= 1
+        if btc_daily[EMA].iloc[-1] > btc_daily[Close].iloc[-1]:
+            trend -= 1
+        if btc_daily[RSI].iloc[-1] < btc_daily[RSI].iloc[-2]:
+            trend -= 1
+        if btc_daily[K].iloc[-1] < btc_daily[D].iloc[-1]:
+            trend -= 1
+        if btc_daily[D].iloc[-1] > 70:
+            trend -= 1
+
+    return btc_daily, trend
