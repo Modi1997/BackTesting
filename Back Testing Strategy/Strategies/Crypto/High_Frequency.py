@@ -5,17 +5,37 @@ from Indicators.Technical_Indicators import *
 pd.set_option('display.max_columns', 20)
 pd.set_option('display.width', 2000)
 
-# Retrieve Data
-coin_df = get_data('BTCUSDT','1d', '22500d').drop(columns='Date')
+# BTC Daily Data
+btc_daily = get_data('BTCUSDT','1d', '100d').drop(columns='Date')
 
 # Create Trend Features
-# coin_df['Change'] = round(coin_df['Close'].pct_change() * 100, 2)
+# Get EMA
+btc_daily['EMA'] = round(EMA(50, btc_daily['Close']), 2)
+# Get EMA
+btc_daily['RSI'] = round(RSI(btc_daily['Close']), 2)
+# Get MACD Total
+macd = MACD(btc_daily['Close'])
+btc_daily['MACD'] = round(macd[-3], 2)
+# Get STOCHASTIC_RSI
+btc_daily = STOCHASTIC_RSI(btc_daily)
+
+
+# Defining the Daily Trend
+if btc_daily['Change'].iloc[-1] > 0:
+    trend = 1
+    if btc_daily['EMA'].iloc[-1] < btc_daily['Close'].iloc[-1]:
+        trend = 2
+#TODO        if btc_daily['RSI'].iloc[-1] <
+else:
+    trend = -1
+
+
+coin_df = get_data('BTCUSDT', '1m', '200m')
 coin_df['EMA'] = round(EMA(50, coin_df['Close']), 2)
 
-print(coin_df)
+print(btc_daily.tail(20))
+#print(coin_df)
 
 #TODO
 # 1m timeframe 50 EMA - conditions on 15m and 1d
 # uptrend daily EMA + Change positive then find a time to buy risk/reward 1/4
-# downtrend -//- -//- -//-   negative -//- sell -//- -//- -//-
-# maybe condition on % Change e.g. if +3% BTC then easier long on alts

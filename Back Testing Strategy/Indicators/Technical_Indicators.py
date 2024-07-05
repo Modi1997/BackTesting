@@ -64,9 +64,9 @@ def MACD(close: object) -> pd.DataFrame:
     This function is creating a technical indicator called MACD (Moving Average Convergence/Divergence) and indicates
     where the cross-over of the trend happens (turn around). The first 33 values are NaN as this technical indicator
     needs data from at least 33 points. Please note that it provides 3 arrays:
-        - 1 for the buy
-        - 1 for the sell
-        - 1 difference between buy-sell.
+        . 1 for the buy
+        . 2 for the sell
+        . 3 difference between buy-sell.
     The cross-over happens when the 2nd value from the MACD_total is negative
     and the latest one becomes positive
 
@@ -76,3 +76,34 @@ def MACD(close: object) -> pd.DataFrame:
 
     macd = talib.MACD(close)
     return macd
+
+def STOCHASTIC_RSI(df: pd.DataFrame, rsi_col: str = 'RSI') -> pd.DataFrame:
+    """
+    Calculate the Stochastic RSI for a given DataFrame containing RSI values.
+
+    :param df: DataFrame containing 'RSI' values.
+    :param rsi_col: Column name of the RSI values in the DataFrame.
+    :return: DataFrame with Stochastic RSI (%K and %D) added.
+    """
+
+    # Parameters
+    stochastic_length = 14
+    k_period = 3
+    d_period = 3
+
+    # Calculate StochRSI
+    df['Lowest_RSI'] = df[rsi_col].rolling(window=stochastic_length).min()
+    df['Highest_RSI'] = df[rsi_col].rolling(window=stochastic_length).max()
+    df['StochRSI'] = (df[rsi_col] - df['Lowest_RSI']) / (df['Highest_RSI'] - df['Lowest_RSI'])
+
+    # Smooth %K
+    df['%K'] = df['StochRSI'].rolling(window=k_period).mean()
+
+    # Calculate %D (3-period SMA of %K)
+    df['%D'] = df['%K'].rolling(window=d_period).mean()
+
+    # Drop intermediate columns and NaN values for clean output
+    df.drop(columns=['Lowest_RSI', 'Highest_RSI', 'StochRSI'], inplace=True)
+    df.dropna(inplace=True)
+
+    return df
