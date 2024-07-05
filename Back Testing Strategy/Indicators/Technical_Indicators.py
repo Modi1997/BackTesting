@@ -54,7 +54,7 @@ def EMA(ema_period: int, close: object) -> pd.DataFrame:
     :param close: input close column
     :return: dataframe with datetime and EMA value
     """
-    
+
     ema = close.ewm(span=ema_period, adjust=False).mean()
     return ema
 

@@ -14,6 +14,7 @@ coin_df['EMA'] = round(EMA(50, coin_df['Close']), 2)
 
 print(coin_df)
 
+#TODO
 # 1m timeframe 50 EMA - conditions on 15m and 1d
 # uptrend daily EMA + Change positive then find a time to buy risk/reward 1/4
 # downtrend -//- -//- -//-   negative -//- sell -//- -//- -//-
