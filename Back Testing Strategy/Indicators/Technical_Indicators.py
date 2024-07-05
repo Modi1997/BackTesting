@@ -96,10 +96,9 @@ def STOCHASTIC_RSI(df: pd.DataFrame, rsi_col: str = 'RSI') -> pd.DataFrame:
     df['Highest_RSI'] = df[rsi_col].rolling(window=stochastic_length).max()
     df['StochRSI'] = (df[rsi_col] - df['Lowest_RSI']) / (df['Highest_RSI'] - df['Lowest_RSI'])
 
-    # Smooth %K
+    # Calculate %K
     df['%K'] = df['StochRSI'].rolling(window=k_period).mean()
-
-    # Calculate %D (3-period SMA of %K)
+    # Calculate %D
     df['%D'] = df['%K'].rolling(window=d_period).mean()
 
     # Drop intermediate columns and NaN values for clean output
