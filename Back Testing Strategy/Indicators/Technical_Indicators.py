@@ -158,11 +158,11 @@ def Daily_Trend(Change: str = 'Change', Close: str = 'Close',
 
     btc_daily = get_data('BTCUSDT', '1d', '100d')
 
-    # Defining Daily BTC Trend (-5 Strong Sell, +5 Strong Buy)
+    # Defining Daily BTC Trend (-5 Strong Sell, +5 Strong Buy, if 0 then it is Neutral)
     trend = 0
 
     # Buying Signal
-    if btc_daily[Change].iloc[-1] > 0:
+    if btc_daily[Change].iloc[-1] > (0.3):
         trend += 1
         if btc_daily[EMA].iloc[-1] < btc_daily[Close].iloc[-1]:
             trend += 1
@@ -174,7 +174,7 @@ def Daily_Trend(Change: str = 'Change', Close: str = 'Close',
             trend += 1
 
     # Selling Signal
-    elif btc_daily[Change].iloc[-1] < 0:
+    elif btc_daily[Change].iloc[-1] < (-0.5):
         trend -= 1
         if btc_daily[EMA].iloc[-1] > btc_daily[Close].iloc[-1]:
             trend -= 1
