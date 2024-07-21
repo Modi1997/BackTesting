@@ -14,6 +14,6 @@ coin_df = get_data('ETHUSDT', '1m', '200m')
 # print(daily_trend) # Daily BTC (Market) Trend (-5,5)
 # print(coin_df) # DF for the selected symbol
 
-#TODO BUILD A STRATEGY FOR 1/3M
+#TODO BUILD A STRATEGY FOR 1/3m and 15m confirmation (1,2,3 steps for flipping Buy if Higher High and 50% drop of range and other way around for Sell)
 # 1m timeframe 50 EMA - conditions on 15m and 1d
-# uptrend daily EMA + Change positive then find a time to buy risk/reward 1/4
+# uptrend daily EMA + Change positive then find a time to buy risk/reward 1/3

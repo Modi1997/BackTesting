@@ -112,7 +112,7 @@ def STOCHASTIC_RSI(df: pd.DataFrame, rsi_col: str = 'RSI') -> pd.DataFrame:
     return df
 
 
-def get_data(symbol: str, interval: str, lookback: str) -> pd.DataFrame:
+def get_data(symbol: str, interval: str, lookback: str, ema_period=50) -> pd.DataFrame:
     """
     This function gets the raw data from the get_data function and adds the technical indicators as new features
 
@@ -123,10 +123,10 @@ def get_data(symbol: str, interval: str, lookback: str) -> pd.DataFrame:
     """
 
     # Retrieve Data
-    df = data(symbol, interval, lookback).drop(columns='Date')
+    df = get_binance_data(symbol, interval, lookback).drop(columns='Date')
 
     # Get EMA
-    df['EMA'] = round(EMA(50, df['Close']), 2)
+    df['EMA'] = round(EMA(ema_period, df['Close']), 2)
     # Get RSI
     df['RSI'] = round(RSI(df['Close']), 2)
     # Get MACD Total

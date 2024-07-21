@@ -109,7 +109,7 @@ def show_metrics_and_trades(metrics, trades):
 
     # Columns in the trading data rows
     cols = ('Type', 'Price', 'Date', 'Return %')
-    tree = ttk.Treeview(trades_frame, columns=cols, show='headings')
+    tree = ttk.Treeview(trades_frame, columns=cols, show='headings', height=20)
     tree.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
 
     for col in cols:
