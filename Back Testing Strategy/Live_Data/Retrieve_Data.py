@@ -31,7 +31,7 @@ def get_yahoo_data(symbol, start_date, end_date, interval):
     return yf.download(symbol, start=start_date, end=end_date, interval=interval)
 
 
-def data(symbol, interval, lookback):
+def get_binance_data(symbol, interval, lookback):
     """
     This function takes a symbol, an interval, and lookback and returns
     a dataframe with the ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']

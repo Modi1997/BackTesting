@@ -32,14 +32,14 @@ def plot_trading_signals(df, ema_period, symbol):
 
     # Add Buy signals
     buy_signals = df[df['Signal'] == 1]
-    fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'] * 0.94,
+    fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'] * 0.95,
                              mode='markers',
                              name='Buy Signal',
                              marker=dict(symbol='triangle-up', color='green', size=12)))
 
     # Add Sell signals
     sell_signals = df[df['Signal'] == -1]
-    fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'] * 1.06,
+    fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'] * 1.05,
                              mode='markers',
                              name='Sell Signal',
                              marker=dict(symbol='triangle-down', color='red', size=12)))
