@@ -12,21 +12,18 @@ symbol = 'AAPL'
 # Start Date of data retrieval
 start_date = '2020-01-01'
 # End Date of data retrieval
-end_date = '2024-06-01'
+end_date = '2024-08-01'
 # Interval (for YahooFinance only 1d or 1wk). For BNB can be m, h, d, w
 interval = '1d'
 
 # Fetch data from YahooFinance
 df_yh = get_yahoo_data(symbol, start_date, end_date, interval)
 # Fetch data from Binance
-df_btc = get_binance_data('BTCUSDT', '1d', '2000d')
+df_btc = get_binance_data('BTCUSDT', '1d', '500d')
 
 # Apply EMA strategy
 ema_period = 100
 metrics, trades, df_btc = trades_and_metrics(df_btc, ema_period)
-
-# Chart signal analysis
-plot_trading_signals(df_btc, ema_period, symbol)
 
 
 # Metrics Framework
@@ -47,8 +44,7 @@ def show_metrics_and_trades(metrics, trades):
     frame = ttk.Frame(root, padding="10")
     frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
-    # ******** Strategy Return Details **********
-    #TODO: Add highest return and lowst return
+    # **************************************** Strategy Return Details ******************************************
     #TODO: When there is a short strategy too then add 3 cols -> Total Trades - Long Trades - Short Trades
 
     returns_frame = ttk.LabelFrame(frame, text="Statistics", padding="15")
@@ -107,7 +103,7 @@ def show_metrics_and_trades(metrics, trades):
     ttk.Label(returns_frame, text=f"Average Bars Held: ", font="Helvetica 10 bold").grid(row=11, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text=int(metrics['Average Bars Held'])).grid(row=11, column=1, sticky=tk.W)
 
-    # ****************************** All Trades section ******************************
+    # ********************************************** All Trades section **********************************************
     trades_frame = ttk.LabelFrame(frame, text="All Trades", padding="10")
     trades_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=5, pady=5)
 
@@ -147,5 +143,8 @@ def show_metrics_and_trades(metrics, trades):
 
     root.mainloop()
 
+
+# Chart signal analysis
+plot_trading_signals(df_btc, ema_period, symbol)
 # Show metrics and all trades
 show_metrics_and_trades(metrics, trades)
