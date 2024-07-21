@@ -4,8 +4,8 @@ from tkinter import ttk
 
 # import functions and variables from other files
 from Live_Data.Retrieve_Data import *
-from Strategies.Strategy_Test import *
 from Trades_Framework.Chart_Signals import *
+from Trades_Framework.Trades_and_Metrics import *
 
 # Symbol to fetch data
 symbol = 'AAPL'
@@ -19,11 +19,11 @@ interval = '1d'
 # Fetch data from YahooFinance
 df_yh = get_yahoo_data(symbol, start_date, end_date, interval)
 # Fetch data from Binance
-df_btc = get_binance_data('BTCUSDT', '1d', '2000d')
+df_btc = get_binance_data('BTCUSDT', '1d', '300d')
 
 # Apply EMA strategy
 ema_period = 100
-metrics, trades, df_btc = ema_strategy(df_btc, ema_period)
+metrics, trades, df_btc = trades_and_metrics(df_btc, ema_period)
 
 # Chart signal analysis
 plot_trading_signals(df_btc, ema_period, symbol)
