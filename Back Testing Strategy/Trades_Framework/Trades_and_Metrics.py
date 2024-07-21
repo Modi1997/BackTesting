@@ -11,6 +11,7 @@ def trades_and_metrics(df, initial_capital=100):
 
     # Initialization of variables
     capital = initial_capital
+    returns = []
     trades = []
     fees = 0
     fee_rate = 0.01
@@ -29,6 +30,16 @@ def trades_and_metrics(df, initial_capital=100):
     average_bars_held = len(df) / (total_trades // 2) if total_trades > 0 else 0
     total_trades = int(total_trades / 2)
 
+    for i in range(1, len(trades), 2):
+        entry_trade = trades[i - 1]
+        exit_trade = trades[i]
+        if entry_trade['Type'] == 'BUY' and exit_trade['Type'] == 'SELL':
+            return_percentage = ((exit_trade['Price'] - entry_trade['Price']) / entry_trade['Price']) * 100
+            returns.append(return_percentage)
+
+    highest_return = max(returns) if returns else 0
+    lowest_return = min(returns) if returns else 0
+
     # Metrics to display on the Framework
     metrics = {
         'Initial Capital': initial_capital,
@@ -40,7 +51,9 @@ def trades_and_metrics(df, initial_capital=100):
         'Winning Trades %': winning_percentage,
         'Number of Winners': winning_trades,
         'Number of Losers': losing_trades,
-        'Average Bars Held': average_bars_held
+        'Average Bars Held': average_bars_held,
+        'Highest Return %': highest_return,
+        'Lowest Return %': lowest_return
     }
 
     return metrics, trades, df

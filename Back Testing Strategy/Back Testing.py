@@ -19,7 +19,7 @@ interval = '1d'
 # Fetch data from YahooFinance
 df_yh = get_yahoo_data(symbol, start_date, end_date, interval)
 # Fetch data from Binance
-df_btc = get_binance_data('BTCUSDT', '1d', '300d')
+df_btc = get_binance_data('BTCUSDT', '1d', '2000d')
 
 # Apply EMA strategy
 ema_period = 100
@@ -49,32 +49,32 @@ def show_metrics_and_trades(metrics, trades):
 
     # ******** Strategy Return Details **********
     #TODO: Add highest return and lowst return
-    #TODO: Add average bars held for winners and losers
     #TODO: When there is a short strategy too then add 3 cols -> Total Trades - Long Trades - Short Trades
-    returns_frame = ttk.LabelFrame(frame, text="Returns & Trades", padding="15")
+
+    returns_frame = ttk.LabelFrame(frame, text="Statistics", padding="15")
     returns_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
 
-    ttk.Label(returns_frame, text="Initial Capital: ", font="Helvetica 10 bold").grid(row=0, column=0, sticky=tk.W)
-    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Initial Capital'])).grid(row=0, column=1, sticky=tk.W)
+    ttk.Label(returns_frame, text="PnL %: ", font="Helvetica 10 bold").grid(row=0, column=0, sticky=tk.W)
+    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['PnL %']))
+    pnl_label.grid(row=0, column=1, sticky=tk.W)
+    if metrics['PnL %'] > 0:
+        pnl_label.configure(foreground='green')
+    elif metrics['PnL %'] < 0:
+        pnl_label.configure(foreground='red')
 
-    ttk.Label(returns_frame, text="Ending Capital: ", font="Helvetica 10 bold").grid(row=1, column=0, sticky=tk.W)
-    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Ending Capital'])).grid(row=1, column=1, sticky=tk.W)
-
-    ttk.Label(returns_frame, text="Net Profit: ", font="Helvetica 10 bold").grid(row=2, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="Net Profit: ", font="Helvetica 10 bold").grid(row=1, column=0, sticky=tk.W)
     net_profit_label = ttk.Label(returns_frame, text="${:.2f}".format(metrics['Net Profit']))
-    net_profit_label.grid(row=2, column=1, sticky=tk.W)
+    net_profit_label.grid(row=1, column=1, sticky=tk.W)
     if metrics['Net Profit'] > 0:
         net_profit_label.configure(foreground='green')
     elif metrics['Net Profit'] < 0:
         net_profit_label.configure(foreground='red')
 
-    ttk.Label(returns_frame, text="PnL %: ", font="Helvetica 10 bold").grid(row=3, column=0, sticky=tk.W)
-    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['PnL %']))
-    pnl_label.grid(row=3, column=1, sticky=tk.W)
-    if metrics['PnL %'] > 0:
-        pnl_label.configure(foreground='green')
-    elif metrics['PnL %'] < 0:
-        pnl_label.configure(foreground='red')
+    ttk.Label(returns_frame, text="Initial Capital: ", font="Helvetica 10 bold").grid(row=2, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Initial Capital'])).grid(row=2, column=1, sticky=tk.W)
+
+    ttk.Label(returns_frame, text="Ending Capital: ", font="Helvetica 10 bold").grid(row=3, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Ending Capital'])).grid(row=3, column=1, sticky=tk.W)
 
     ttk.Label(returns_frame, text="Total Transactions Costs (Fees): ", font="Helvetica 10 bold").grid(row=4, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text="${:.2f}".format(metrics['Total Transactions Costs (Fees)'])).grid(row=4, column=1, sticky=tk.W)
@@ -96,10 +96,18 @@ def show_metrics_and_trades(metrics, trades):
     ttk.Label(returns_frame, text=f"Number of Losers: ", font="Helvetica 10 bold").grid(row=8, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text=metrics['Number of Losers']).grid(row=8, column=1, sticky=tk.W)
 
-    ttk.Label(returns_frame, text=f"Average Bars Held: ", font="Helvetica 10 bold").grid(row=9, column=0, sticky=tk.W)
-    ttk.Label(returns_frame, text=int(metrics['Average Bars Held'])).grid(row=9, column=1, sticky=tk.W)
+    ttk.Label(returns_frame, text=f"Highest Return : ", font="Helvetica 10 bold").grid(row=9, column=0, sticky=tk.W)
+    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['Highest Return %']))
+    pnl_label.grid(row=9, column=1, sticky=tk.W)
 
-    # ********** All Trades section **********
+    ttk.Label(returns_frame, text=f"Lowest Return : ", font="Helvetica 10 bold").grid(row=10, column=0, sticky=tk.W)
+    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['Lowest Return %']))
+    pnl_label.grid(row=10, column=1, sticky=tk.W)
+
+    ttk.Label(returns_frame, text=f"Average Bars Held: ", font="Helvetica 10 bold").grid(row=11, column=0, sticky=tk.W)
+    ttk.Label(returns_frame, text=int(metrics['Average Bars Held'])).grid(row=11, column=1, sticky=tk.W)
+
+    # ****************************** All Trades section ******************************
     trades_frame = ttk.LabelFrame(frame, text="All Trades", padding="10")
     trades_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=5, pady=5)
 
