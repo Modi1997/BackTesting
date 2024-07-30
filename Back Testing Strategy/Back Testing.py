@@ -21,7 +21,7 @@ df_yh = get_yahoo_data(yh_symbol, start_date, end_date, interval)
 
 # Fetch data from Binance
 crypto_symbol = 'BTCUSDT'
-df_btc = get_binance_data('BTCUSDT', '1d', '500d')
+df_btc = get_binance_data('BTCUSDT', '1d', '1500d')
 
 # Metrics
 metrics, trades, df_btc = trades_and_metrics(df_btc)
