@@ -1,6 +1,6 @@
 import plotly.graph_objects as go
 
-def plot_trading_signals(df, ema_period, symbol):
+def plot_trading_signals(df, symbol, ema_period=100):
     """
     This function opens a new window on a browser and displays the chart based on the selected symbol and timeframe.
     It also shows the buy and sell signals based on the strategy
@@ -46,7 +46,7 @@ def plot_trading_signals(df, ema_period, symbol):
 
     # Customize layout
     fig.update_layout(
-        title=f'{symbol} Price Chart with Buy/Sell Signals',
+        title=f'{symbol} Price Chart with Signals',
         xaxis_title='Date',
         yaxis_title='Price',
         legend_title='Legend',

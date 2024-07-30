@@ -8,7 +8,7 @@ from Trades_Framework.Chart_Signals import *
 from Trades_Framework.Trades_and_Metrics import *
 
 # Symbol to fetch data
-symbol = 'AAPL'
+yh_symbol = 'AAPL'
 # Start Date of data retrieval
 start_date = '2020-01-01'
 # End Date of data retrieval
@@ -17,13 +17,14 @@ end_date = '2024-08-01'
 interval = '1d'
 
 # Fetch data from YahooFinance
-df_yh = get_yahoo_data(symbol, start_date, end_date, interval)
+df_yh = get_yahoo_data(yh_symbol, start_date, end_date, interval)
+
 # Fetch data from Binance
+crypto_symbol = 'BTCUSDT'
 df_btc = get_binance_data('BTCUSDT', '1d', '500d')
 
-# Apply EMA strategy
-ema_period = 100
-metrics, trades, df_btc = trades_and_metrics(df_btc, ema_period)
+# Metrics
+metrics, trades, df_btc = trades_and_metrics(df_btc)
 
 
 # Metrics Framework
@@ -145,6 +146,6 @@ def show_metrics_and_trades(metrics, trades):
 
 
 # Chart signal analysis
-plot_trading_signals(df_btc, ema_period, symbol)
+plot_trading_signals(df_btc, crypto_symbol)
 # Show metrics and all trades
 show_metrics_and_trades(metrics, trades)
