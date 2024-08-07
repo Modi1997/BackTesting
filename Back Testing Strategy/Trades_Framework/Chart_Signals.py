@@ -39,18 +39,18 @@ def plot_trading_signals(df, symbol, ema_period=100):
 
     # Add Buy signals
     buy_signals = df[df['Signal'] == 1]
-    fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'] * 0.95,
+    fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'] * 0.94,
                              mode='markers',
                              name='Buy Signal',
-                             marker=dict(symbol='triangle-up', color='green', size=12)),
+                             marker=dict(symbol='triangle-up', color='green', size=14)),
                   row=1, col=1)
 
     # Add Sell signals
     sell_signals = df[df['Signal'] == -1]
-    fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'] * 1.05,
+    fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'] * 1.06,
                              mode='markers',
                              name='Sell Signal',
-                             marker=dict(symbol='triangle-down', color='red', size=12)),
+                             marker=dict(symbol='triangle-down', color='red', size=14)),
                   row=1, col=1)
 
     # Add change trace with conditional coloring
