@@ -7,26 +7,6 @@ from Live_Data.Retrieve_Data import *
 from Trades_Framework.Chart_Signals import *
 from Trades_Framework.Trades_and_Metrics import *
 
-# Symbol to fetch data
-yh_symbol = 'AAPL'
-# Start Date of data retrieval
-start_date = '2020-01-01'
-# End Date of data retrieval
-end_date = '2024-08-01'
-# Interval (for YahooFinance only 1d or 1wk). For BNB can be m, h, d, w
-interval = '1d'
-
-# Fetch data from YahooFinance
-df_yh = get_yahoo_data(yh_symbol, start_date, end_date, interval)
-
-# Fetch data from Binance
-crypto_symbol = 'BTCUSDT'
-df_btc = get_binance_data('BTCUSDT', '1d', '1500d')
-
-# Metrics
-metrics, trades, df_btc = trades_and_metrics(df_btc)
-
-
 # Metrics Framework
 def show_metrics_and_trades(metrics, trades):
     """
@@ -145,7 +125,31 @@ def show_metrics_and_trades(metrics, trades):
     root.mainloop()
 
 
+# Symbol to fetch data
+yh_symbol = 'NVDA'
+# Start Date of data retrieval
+start_date = '2020-01-01'
+# End Date of data retrieval
+end_date = '2024-09-24'
+# Interval for YahooFinance only 1d or 1wk
+yh_interval = '1d'
+# Fetch data from YahooFinance
+df_yh = get_yahoo_data(yh_symbol, start_date, end_date, yh_interval)
+
+# Symbol to fetch data
+crypto_symbol = 'BTCUSDT'
+# Data depth
+lookback = '1500d'
+# Interval (bar) in m, h, d, w --> e.g. 2w
+crypto_interval = '1d'
+# Fetch data from Binance
+df_btc = get_binance_data(crypto_symbol, crypto_interval, lookback)
+
+# Metrics
+yh_metrics, yh_trades, df_yh = trades_and_metrics(df_yh)
+crypto_metrics, crypto_trades, df_btc = trades_and_metrics(df_btc)
+
 # Chart signal analysis
-plot_trading_signals(df_btc, crypto_symbol)
+plot_trading_signals(df_yh, yh_symbol)
 # Show metrics and all trades
-show_metrics_and_trades(metrics, trades)
+show_metrics_and_trades(yh_metrics, yh_trades)

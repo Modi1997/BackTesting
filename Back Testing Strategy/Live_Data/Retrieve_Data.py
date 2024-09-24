@@ -28,8 +28,12 @@ def get_yahoo_data(symbol, start_date, end_date, interval):
     :return: df
     """
 
-    return yf.download(symbol, start=start_date, end=end_date, interval=interval)
+    # Get the DataFrame
+    frame = yf.download(symbol, start=start_date, end=end_date, interval=interval)
+    # Create New Feature Change (in %)
+    frame['Change'] = round(frame['Close'].pct_change() * 100, 2)
 
+    return frame
 
 def get_binance_data(symbol, interval, lookback):
     """

@@ -66,7 +66,6 @@ def plot_trading_signals(df, symbol, ema_period=100):
         )
     ), row=2, col=1)
 
-    # Check if we need to add dotted lines at 7% and -7%
     shapes = [
         dict(
             type='line',
