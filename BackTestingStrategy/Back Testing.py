@@ -32,29 +32,29 @@ def show_metrics_and_trades(metrics, trades):
     returns_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     ttk.Label(returns_frame, text="PnL %: ", font="Helvetica 10 bold").grid(row=0, column=0, sticky=tk.W)
-    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['PnL %']))
+    pnl_label = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['PnL %'].item()))
     pnl_label.grid(row=0, column=1, sticky=tk.W)
-    if metrics['PnL %'] > 0:
+    if metrics['PnL %'].item() > 0:
         pnl_label.configure(foreground='green')
-    elif metrics['PnL %'] < 0:
+    elif metrics['PnL %'].item() < 0:
         pnl_label.configure(foreground='red')
 
     ttk.Label(returns_frame, text="Net Profit: ", font="Helvetica 10 bold").grid(row=1, column=0, sticky=tk.W)
-    net_profit_label = ttk.Label(returns_frame, text="${:.2f}".format(metrics['Net Profit']))
+    net_profit_label = ttk.Label(returns_frame, text="${:.2f}".format(metrics['Net Profit'].item()))
     net_profit_label.grid(row=1, column=1, sticky=tk.W)
-    if metrics['Net Profit'] > 0:
+    if metrics['Net Profit'].item() > 0:
         net_profit_label.configure(foreground='green')
-    elif metrics['Net Profit'] < 0:
+    elif metrics['Net Profit'].item() < 0:
         net_profit_label.configure(foreground='red')
 
     ttk.Label(returns_frame, text="Initial Capital: ", font="Helvetica 10 bold").grid(row=2, column=0, sticky=tk.W)
     ttk.Label(returns_frame, text="${:.2f}".format(metrics['Initial Capital'])).grid(row=2, column=1, sticky=tk.W)
 
     ttk.Label(returns_frame, text="Ending Capital: ", font="Helvetica 10 bold").grid(row=3, column=0, sticky=tk.W)
-    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Ending Capital'])).grid(row=3, column=1, sticky=tk.W)
+    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Ending Capital'].item())).grid(row=3, column=1, sticky=tk.W)
 
     ttk.Label(returns_frame, text="Total Transactions Costs (Fees): ", font="Helvetica 10 bold").grid(row=4, column=0, sticky=tk.W)
-    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Total Transactions Costs (Fees)'])).grid(row=4, column=1, sticky=tk.W)
+    ttk.Label(returns_frame, text="${:.2f}".format(metrics['Total Transactions Costs (Fees)'].item())).grid(row=4, column=1, sticky=tk.W)
 
     ttk.Label(returns_frame, text="Winning Trades %: ", font="Helvetica 10 bold").grid(row=5, column=0, sticky=tk.W)
     winning_trades = ttk.Label(returns_frame, text="{:.2f}%".format(metrics['Winning Trades %']))
@@ -101,11 +101,21 @@ def show_metrics_and_trades(metrics, trades):
         if trade['Type'] == 'SELL':
             buy_trade = trades[i-1]
             return_percentage = ((trade['Price'] - buy_trade['Price']) / buy_trade['Price']) * 100
-            tree.insert("", "end", values=(trade['Type'], f"${trade['Price']:.2f}", trade['Index'].strftime('%Y-%m-%d'), f"{return_percentage:.2f}%"))
+            # Ensure 'Price' and 'return_percentage' are scalars before formatting
+            tree.insert(
+                "", "end",
+                values=(
+                    trade['Type'],
+                    f"${trade['Price'].item():.2f}" if hasattr(trade['Price'], "item") else f"${trade['Price']:.2f}",
+                    trade['Index'].strftime('%Y-%m-%d'),
+                    f"{return_percentage.item():.2f}%" if hasattr(return_percentage,
+                                                                  "item") else f"{return_percentage:.2f}%"
+                )
+            )
 
             # Dynamic colouring of the trading data rows
             # Winner Green
-            if return_percentage > 0:
+            if return_percentage.item() > 0:
                 tree.tag_configure('winner', background='lightgreen')
                 tree.item(tree.get_children()[-1], tags=('winner',))
                 tree.item(tree.get_children()[-2], tags=('winner',))
@@ -115,8 +125,15 @@ def show_metrics_and_trades(metrics, trades):
                 tree.item(tree.get_children()[-1], tags=('loser',))
                 tree.item(tree.get_children()[-2], tags=('loser',))
         else:
-            tree.insert("", "end", values=(trade['Type'], f"${trade['Price']:.2f}", trade['Index'].strftime('%Y-%m-%d'), ''))
-
+            tree.insert(
+                "", "end",
+                values=(
+                    trade['Type'],
+                    f"${trade['Price'].item():.2f}" if hasattr(trade['Price'], "item") else f"${trade['Price']:.2f}",
+                    trade['Index'].strftime('%Y-%m-%d'),
+                    ''
+                )
+            )
     # Configure grid layout
     for i in range(6):
         trades_frame.rowconfigure(i, weight=1)
@@ -128,9 +145,9 @@ def show_metrics_and_trades(metrics, trades):
 # Symbol to fetch data
 yh_symbol = 'NVDA'
 # Start Date of data retrieval
-start_date = '2020-01-01'
+start_date = '2024-01-01'
 # End Date of data retrieval
-end_date = '2024-09-24'
+end_date = '2025-01-01'
 # Interval for YahooFinance only 1d or 1wk
 yh_interval = '1d'
 # Fetch data from YahooFinance

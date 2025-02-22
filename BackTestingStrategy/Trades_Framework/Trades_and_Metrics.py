@@ -1,5 +1,4 @@
-from Strategies.Strategy_Test import *
-
+from BackTestingStrategy.Strategies.Strategy_Test import *
 def trades_and_metrics(df, initial_capital=100):
     """
     This function gets the DF, other indicators or values and initial capital and returns performance metrics
@@ -24,7 +23,11 @@ def trades_and_metrics(df, initial_capital=100):
     net_profit = ending_capital - initial_capital
     pnl_percentage = (net_profit / initial_capital) * 100
     total_trades = len(trades)
-    winning_trades = sum(1 for t in trades if t['Type'] == 'SELL' and t['Price'] > trades[trades.index(t) - 1]['Price'])
+    # Fix by ensuring 'Price' comparison is done on scalar values
+    winning_trades = sum(
+        1 for i, t in enumerate(trades)
+        if t['Type'] == 'SELL' and i > 0 and t['Price'].item() > trades[i - 1]['Price'].item()
+    )
     losing_trades = (total_trades // 2) - winning_trades
     winning_percentage = (winning_trades / (total_trades // 2)) * 100 if total_trades > 0 else 0
     average_bars_held = len(df) / (total_trades // 2) if total_trades > 0 else 0
@@ -35,7 +38,7 @@ def trades_and_metrics(df, initial_capital=100):
         exit_trade = trades[i]
         if entry_trade['Type'] == 'BUY' and exit_trade['Type'] == 'SELL':
             return_percentage = ((exit_trade['Price'] - entry_trade['Price']) / entry_trade['Price']) * 100
-            returns.append(return_percentage)
+            returns.append(return_percentage.item() if hasattr(return_percentage, "item") else return_percentage)
 
     highest_return = max(returns) if returns else 0
     lowest_return = min(returns) if returns else 0

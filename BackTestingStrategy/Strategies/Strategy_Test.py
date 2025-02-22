@@ -14,15 +14,16 @@ def strategy(df, capital, fees, fee_rate, trades, ema_period):
     df['EMA'] = df['Close'].ewm(span=ema_period, adjust=False).mean()
     # Signal: 1 Buy, -1 Sell, 0 Initialization
     df['Signal'] = 0
+
     # Initialisation of variables
     entried = False
+    position = 0
 
     # Get in - Get out
     for i in range(1, len(df)):
 
         # Buy signal
-        if not entried and df['Close'].iloc[i] > df['EMA'].iloc[i]:
-
+        if not entried and df['Close'].iloc[i].item() > df['EMA'].iloc[i].item():
             entry_price = df['Close'].iloc[i]
             max_qty = capital / (entry_price * (1 + fee_rate))
             cost = entry_price * max_qty * (1 + fee_rate)
@@ -35,8 +36,7 @@ def strategy(df, capital, fees, fee_rate, trades, ema_period):
 
 
         # Sell signal
-        elif entried and df['Close'].iloc[i] < df['EMA'].iloc[i]:
-
+        elif entried and df['Close'].iloc[i].item() < df['EMA'].iloc[i].item():
             exit_price = df['Close'].iloc[i]
             sell_value = exit_price * position * (1 - fee_rate)
             capital += sell_value

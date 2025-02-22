@@ -12,6 +12,9 @@ def plot_trading_signals(df, symbol, ema_period=100):
     :return: interactive visualization
     """
 
+    # Select the multi index
+    ticker = df.columns.levels[1][0]  # This gets the first (and likely only) ticker in MultiIndex
+
     # Create a new figure with two subplots: one for the price chart and one for the change
     fig = make_subplots(rows=2, cols=1,
                         row_heights=[0.8, 0.2],  # Define the height ratio of the two rows
@@ -21,47 +24,49 @@ def plot_trading_signals(df, symbol, ema_period=100):
 
     # Add candlestick chart
     fig.add_trace(go.Candlestick(x=df.index,
-                                 open=df['Open'],
-                                 high=df['High'],
-                                 low=df['Low'],
-                                 close=df['Close'],
+                                 open=df[('Open', ticker)],
+                                 high=df[('High', ticker)],
+                                 low=df[('Low', ticker)],
+                                 close=df[('Close', ticker)],
                                  increasing_line_color='green',
                                  decreasing_line_color='red',
                                  name='Market Data'),
                   row=1, col=1)
 
     # Add EMA trace
-    fig.add_trace(go.Scatter(x=df.index, y=df['EMA'],
+    fig.add_trace(go.Scatter(x=df.index, y=df[('EMA', '')],
                              mode='lines',
                              name=f'EMA {ema_period}',
                              line=dict(dash='dash', color='grey')),
                   row=1, col=1)
 
     # Add Buy signals
-    buy_signals = df[df['Signal'] == 1]
-    fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals['Close'] * 0.94,
-                             mode='markers',
-                             name='Buy Signal',
-                             marker=dict(symbol='triangle-up', color='blue', size=14)),
-                  row=1, col=1)
+    buy_signals = df[df[('Signal', '')] == 1]
+    if not buy_signals.empty:
+        fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals[('Close', ticker)] * 0.94,
+                                 mode='markers',
+                                 name='Buy Signal',
+                                 marker=dict(symbol='triangle-up', color='blue', size=14)),
+                      row=1, col=1)
 
     # Add Sell signals
-    sell_signals = df[df['Signal'] == -1]
-    fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals['Close'] * 1.06,
-                             mode='markers',
-                             name='Sell Signal',
-                             marker=dict(symbol='triangle-down', color='black', size=14)),
-                  row=1, col=1)
+    sell_signals = df[df[('Signal', '')] == -1]
+    if not sell_signals.empty:
+        fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals[('Close', ticker)] * 1.06,
+                                 mode='markers',
+                                 name='Sell Signal',
+                                 marker=dict(symbol='triangle-down', color='black', size=14)),
+                      row=1, col=1)
 
     # Add change trace with conditional coloring
     fig.add_trace(go.Scatter(
         x=df.index,
-        y=df['Change'],
+        y=df[('Change', '')],
         mode='lines+markers',
         name='Percentage Change',
         line=dict(color='orange'),
         marker=dict(
-            color=df['Change'].apply(lambda x: 'red' if x > 7 else ('green' if x < -7 else 'orange')),
+            color=df[('Change', '')].apply(lambda x: 'red' if x > 7 else ('green' if x < -7 else 'orange')),
             size=8
         )
     ), row=2, col=1)
@@ -96,7 +101,7 @@ def plot_trading_signals(df, symbol, ema_period=100):
         )
     ]
 
-    if (df['Change'] > 7).any():
+    if (df[('Change', '')] > 7).any():
         shapes.append(
             dict(
                 type='line',
@@ -114,7 +119,7 @@ def plot_trading_signals(df, symbol, ema_period=100):
             )
         )
 
-    if (df['Change'] < -7).any():
+    if (df[('Change', '')] < -7).any():
         shapes.append(
             dict(
                 type='line',
