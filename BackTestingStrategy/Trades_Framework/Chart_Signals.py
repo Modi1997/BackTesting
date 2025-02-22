@@ -12,8 +12,8 @@ def plot_trading_signals(df, symbol, ema_period=100):
     :return: interactive visualization
     """
 
-    # Select the multi index
-    ticker = df.columns.levels[1][0]  # This gets the first (and likely only) ticker in MultiIndex
+    # This gets the symbol name (str) in MultiIndex
+    ticker = df.columns.levels[1][0]
 
     # Create a new figure with two subplots: one for the price chart and one for the change
     fig = make_subplots(rows=2, cols=1,
